@@ -1,0 +1,15 @@
+{
+    "server": "116.62.139.2",
+    "port": 1433,
+    "database": "bell",
+    "user": "sa",
+    "password": "",
+    "pool": {
+        "max": 2,
+        "min": 0,
+        "idleTimeoutMillis": 30000
+    },
+    "general": {
+        "jwtSecret": "taobabababa"
+    }
+}
