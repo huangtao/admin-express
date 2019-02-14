@@ -4,21 +4,27 @@ var session = require('express-session');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var checkToken = require('./middlewares/checkToken');
 
 var indexRouter = require('./routes/index');
 var userRouter = require('./routes/user');
+var playerRouter = require('./routes/player');
 
 var app = express();
 
-// 设置跨域访问
+// 允许跨域访问
 // ip和端口任意一个不一致均属于跨域
 app.all('*', function (req, res, next) {
   res.header('Access-Control-Allow-Origin', "*");
-  res.header('Access-Control-Allow-Headers', "X-Requested-With,Content-Type");
+  res.header('Access-Control-Allow-Headers', "X-Requested-With,Content-Type,x-token,x-access-token");
   res.header('Access-Control-Allow-Methods', "POST,GET,OPTIONS");
   res.header('X-Powered-By', ' 3.2.1');
   res.header('Content-Type', "application/json;charset=utf-8");
-  next();
+  if (req.method == 'OPTIONS') {
+    res.send(200); /* 让OPTIONS请求快速返回 */
+  } else {
+    next();
+  }
 });
 
 // view engine setup
@@ -43,6 +49,7 @@ app.use(session({
 
 app.use('/', indexRouter);
 app.use('/user', userRouter);
+app.use('/player', checkToken, playerRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

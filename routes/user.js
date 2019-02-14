@@ -1,9 +1,8 @@
 var express = require('express');
 var router = express.Router();
-var crypto = require('crypto');
-var jwt = require('jsonwebtoken');
+var tokenHelper = require('../common/tokenHelper');
 var db = require('../dao/mssql');
-var config = require('../dao/config.json');
+var config = require('../common/config.json');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -23,12 +22,7 @@ router.post('/login', function (req, res, next) {
   if (userinfo.username.length == 0 || userinfo.password.length == 0) {
     return;
   }
-  // 密码和用户名联合做MD5和数据库保存的密码比较
-  let md5 = crypto.createHash('md5');
-  let str = userinfo.username + userinfo.password;
-  md5.update(str);
-  let cptPwd = md5.digest('hex');
-  db.sp_login(userinfo.username, cptPwd, function (err, result) {
+  db.sp_login(userinfo.username, userinfo.password, function (err, result) {
     if (err) {
       console.error(err);
     } else {
@@ -43,13 +37,12 @@ router.post('/login', function (req, res, next) {
         data: data
       };
       if (dbret === 1) {
-        // 登录成功,给一个1小时的token
-        let token = jwt.sign({username:userinfo.username}, config.general.jwtSecret, {
-          expiresIn: 60 * 60 * 1
-        });
+        // 登录成功,给token
+        let token = tokenHelper.setToken({username:userinfo.username});
         data.token = token;
       } else{
         // 登录失败
+        console.log('dbret=' + dbret + ',sql return:' + result.returnValue);
         if (result.returnValue === -3) {
           respMsg.code = 50021;
           respMsg.message = '密码错误!';
@@ -58,9 +51,57 @@ router.post('/login', function (req, res, next) {
           respMsg.message = '登录失败!';
         }
       }
-      res.send(respMsg);
+      res.json(respMsg);
     }
   });
+});
+
+/* 获取用户信息. */
+router.get('/info', function(req, res, next) {
+  // 检查token
+  let token = req.body.token || req.query.token || req.headers['x-access-token'];
+  if (token) {
+    tokenHelper.verifyToken(token, function (err, decoded) {
+      if (err) {
+        // 解码token出错,让客户端重新登录
+        return res.json({ code: 50014, message: '请重新登录' });
+      } else {
+        let respMsg = {
+          code: 20000,
+          message: 'ok',
+          data: {}
+        };
+        let username = decoded.username;
+        let roles = config.general.roles;
+        let find = false;
+        for (let i = 0; i < roles.length; i++) {
+          if (username == roles[i].username) {
+            find = true;
+            respMsg.data.roles = roles[i].roles;
+            respMsg.data.name = username;
+            respMsg.data.avatar = roles[i].avatar;
+            break;
+          }
+        }
+        if (!find) {
+          respMsg.code = 50014;
+          respMsg.message = '请重新登录';
+        }
+        res.json(respMsg);
+      }
+    });
+  } else {
+    return res.status(403).send({ code: 50008, message: '非法访问' });
+  }
+});
+
+// 注销
+router.post('/logout', function (req, res, next) {
+  let respMsg = {
+    code: 20000,
+    message: 'ok'
+  };
+  res.json(respMsg);
 });
 
 module.exports = router;

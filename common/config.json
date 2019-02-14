@@ -1,0 +1,31 @@
+{
+    "server": "116.62.139.2",
+    "port": 1433,
+    "database": "bell",
+    "user": "sa",
+    "password": "",
+    "pool": {
+        "max": 2,
+        "min": 0,
+        "idleTimeoutMillis": 30000
+    },
+    "general": {
+        "jwtSecret": "taobabababa",
+        "roles": [
+            {
+                "username": "gm0575",
+                "roles": [
+                  "admin"
+                ],
+                "avatar": "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif"
+            },
+            {
+                "username": "铃铛游戏",
+                "roles": [
+                  "gm"
+                ],
+                "avatar": "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif"
+            }
+        ]
+    }
+}
