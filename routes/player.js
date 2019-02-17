@@ -76,6 +76,12 @@ router.post('/dopay', function (req, res, next) {
   if (price == 0) {
     return;
   }
+  if (price >= 50) {
+    // 检查权限
+    if (!tokenHelper.isAdmin(req.token_data.username)) {
+      return;
+    }
+  }
   let str = req.token_data.username + ':dopoay playerid=' + playerid;
   str += ',price=' + price + ',desc=' + req.body.desc;
   logger.info(str);
@@ -117,6 +123,10 @@ router.post('/mgrbox', function (req, res, next) {
   let value = 0;
   if (req.body.action == 1) {
     // 保险箱增减
+    // 权限检查
+    if (!tokenHelper.isAdmin(req.token_data.username)) {
+      return;
+    }
     value = parseInt(req.body.value);
     if (isNaN(value)) {
       return;

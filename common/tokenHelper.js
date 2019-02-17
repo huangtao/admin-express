@@ -47,3 +47,15 @@ exports.destoryToken = function (req, res, next) {
 
 }
 
+// 是否是admin
+exports.isAdmin = function (username) {
+    let roles = config.general.roles;
+    for (let i = 0; i < roles.length; i++) {
+        if (username == roles[i].username) {
+            if (roles[i].roles.indexOf('admin') >= 0) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
