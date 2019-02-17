@@ -1,12 +1,9 @@
 var createError = require('http-errors');
 var express = require('express');
-var session = require('express-session');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var checkToken = require('./middlewares/checkToken');
-var ejs = require('ejs');
-var indexRouter = require('./routes/index');
 var userRouter = require('./routes/user');
 var playerRouter = require('./routes/player');
 
@@ -38,16 +35,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-// // 使用session中间件
-// app.use(session({
-//   secret: 'keyboard cat',         // 加密KEY,随意写
-//   resave: true,
-//   saveUninitialized: false,
-//   cookie: {
-//     maxAge: 1000 * 60 * 60 * 8,  // 有效时间8小时
-//   }
-// }));
 
 //app.use('/', indexRouter);
 app.use('/user', userRouter);
