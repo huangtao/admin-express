@@ -41,6 +41,8 @@ router.post('/info', function (req, res, next) {
           data.sex = result.output.sex;
           data.gold = result.output.cash;
           data.boxGold = result.output.bank;
+          data.diamond = result.output.diamond;
+          data.qljz = result.output.qljz;
           data.permission = result.output.permission;
           data.email = result.output.email;
           data.question = result.output.question;

@@ -47,9 +47,11 @@ exports.sp_getplayerinfo = function (playerid, callback) {
       .output('mac', sql.Char)
       .output('realname', sql.Char)
       .output('cash', sql.Int)
+      .output('diamond', sql.Int)
+      .output('qljz', sql.Int)
       .output('bank', sql.Int)
       .output('ret', sql.Int, 0)
-      .execute('cp_mgr_userinfo');
+      .execute('cp_mgr_userinfo2');
   }).then(result => {
     // console.dir(result);
     callback(null, result);
