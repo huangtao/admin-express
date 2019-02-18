@@ -240,4 +240,45 @@ router.post('/mgrid', function (req, res, next) {
   });
 });
 
+// 积分/勤劳奖章增减
+router.post('/jfop', function (req, res, next) {
+  console.log('request jfop ...');
+  if (!req.body || (!req.body.playerid && !req.body.flag)) {
+    console.log('param error!');
+    return;
+  }
+  let playerid = req.body.playerid.trim();
+  if (req.body.playerid.length == 0) {
+    console.log('playerid is zero!');
+    return;
+  }
+  // 记录到日志
+  let str = req.token_data.username + ':jfop flag=' + req.body.flag  + ',playerid=' + playerid;
+  str += ',value=' + req.body.value + ',desc=' + req.body.desc;
+  logger.info(str);
+  db.sp_jfop(playerid, req.body.flag, req.body.value, function (err, result) {
+    if (err) {
+      console.error(err);
+    } else {
+      let dbret = result.output.ret;
+      let data = {
+        playerid: req.body.playerid,
+        dbret: dbret
+      };
+      // vue-elementui-admin 约定非20000为错误
+      let respMsg = {
+        code: 20000,
+        message: 'ok',
+        data: data
+      };
+      if (dbret === 1) {
+        data.newjf = result.output.newJF;
+      } else {
+        respMsg.message = '操作失败!';
+      }
+      res.json(respMsg);
+    }
+  });
+});
+
 module.exports = router;

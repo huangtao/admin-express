@@ -138,3 +138,22 @@ exports.sp_mgrid = function (playerid, action, callback) {
   });
 };
 
+// 积分操作,勤劳奖章操作
+exports.sp_jfop = function (playerid, flag, value, callback) {
+  let gbk_playerid = iconv.encode(playerid, 'gbk').toString('latin1');
+  new sql.ConnectionPool(config).connect().then(pool => {
+    return pool.request()
+      .input('userid', sql.Char, gbk_playerid)
+      .input('flag', sql.Int, flag)
+      .input('v', sql.Int, value)
+      .output('newJF', sql.Int)
+      .output('ret', sql.Int)
+      .execute('cp_mgr_jfop');
+  }).then(result => {
+    // console.dir(result);
+    callback(null, result);
+  }).catch(err => {
+    console.log(err);
+    callback(err, null);
+  });
+};
