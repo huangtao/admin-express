@@ -6,6 +6,7 @@ var logger = require('morgan');
 var checkToken = require('./middlewares/checkToken');
 var userRouter = require('./routes/user');
 var playerRouter = require('./routes/player');
+var dashboardRouter = require('./routes/dashboard');
 
 var app = express();
 
@@ -39,6 +40,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/player', checkToken, playerRouter);
+app.use('/dashboard', checkToken, dashboardRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
