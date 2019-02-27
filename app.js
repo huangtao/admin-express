@@ -7,23 +7,26 @@ var checkToken = require('./middlewares/checkToken');
 var userRouter = require('./routes/user');
 var playerRouter = require('./routes/player');
 var dashboardRouter = require('./routes/dashboard');
+var config = require('./common/config.json');
 
 var app = express();
 
-// 允许跨域访问
-// ip和端口任意一个不一致均属于跨域
-// app.all('*', function (req, res, next) {
-//   res.header('Access-Control-Allow-Origin', "*");
-//   res.header('Access-Control-Allow-Headers', "X-Requested-With,Content-Type,x-token,x-access-token");
-//   res.header('Access-Control-Allow-Methods', "POST,GET,OPTIONS");
-//   res.header('X-Powered-By', ' 3.2.1');
-//   res.header('Content-Type', "application/json;charset=utf-8");
-//   if (req.method == 'OPTIONS') {
-//     res.send(200); /* 让OPTIONS请求快速返回 */
-//   } else {
-//     next();
-//   }
-// });
+if (config.general.allowOrigin > 0) {
+  // 允许跨域访问
+  // ip和端口任意一个不一致均属于跨域
+  app.all('*', function (req, res, next) {
+    res.header('Access-Control-Allow-Origin', "*");
+    res.header('Access-Control-Allow-Headers', "X-Requested-With,Content-Type,x-token,x-access-token");
+    res.header('Access-Control-Allow-Methods', "POST,GET,OPTIONS");
+    res.header('X-Powered-By', ' 3.2.1');
+    res.header('Content-Type', "application/json;charset=utf-8");
+    if (req.method == 'OPTIONS') {
+      res.send(200); /* 让OPTIONS请求快速返回 */
+    } else {
+      next();
+    }
+  });
+}
 
 // view engine setup
 //app.set('views', path.join(__dirname, 'views'));
