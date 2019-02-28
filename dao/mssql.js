@@ -181,6 +181,23 @@ exports.sp_jfop = function (playerid, flag, value, callback) {
   });
 };
 
+// 平台监控基本信息
+exports.sp_totalinfo = function (callback) {
+  new sql.ConnectionPool(config).connect().then(pool => {
+    return pool.request()
+      .output('xiaohao', sql.Int)
+      .output('chongzhi', sql.Int)
+      .output('newuser', sql.Int)
+      .output('totalyz', sql.Int)
+      .execute('cp_totalinfo');
+  }).then(result => {
+    callback(null, result);
+  }).catch(err => {
+    console.log(err);
+    callback(err, null);
+  });
+};
+
 // 7天服务费
 exports.day7_fuwufei = function (callback) {
   new sql.ConnectionPool(config).connect().then(pool => {
