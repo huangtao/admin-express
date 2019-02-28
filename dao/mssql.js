@@ -180,3 +180,17 @@ exports.sp_jfop = function (playerid, flag, value, callback) {
     callback(err, null);
   });
 };
+
+// 7天服务费
+exports.day7_fuwufei = function (callback) {
+  new sql.ConnectionPool(config).connect().then(pool => {
+    return pool.request()
+      .query('select * from day7_fuwufei');
+  }).then(result => {
+    console.dir(result);
+    callback(null, result);
+  }).catch(err => {
+    console.log(err);
+    callback(err, null);
+  });
+};
