@@ -100,6 +100,29 @@ exports.sp_mgrbox = function (playerid, action, value, callback) {
   });
 };
 
+// 修改登录密码
+exports.sp_mgrpwd = function (playerid, newpwd, callback) {
+  let gbk_playerid = iconv.encode(playerid, 'gbk').toString('latin1');
+  // 密码和用户名联合做MD5和数据库保存的密码比较
+  let md5 = crypto.createHash('md5');
+  let str = playerid + newpwd;
+  let strBuf = iconv.encode(str, 'gbk');
+  md5.update(strBuf);
+  let cptPwd = md5.digest('hex').toUpperCase();
+  new sql.ConnectionPool(config).connect().then(pool => {
+    return pool.request()
+      .input('customerid', sql.Char, gbk_playerid)
+      .input('pwd', sql.Char, cptPwd)
+      .execute('cp_mgr_pwd');
+  }).then(result => {
+    // console.dir(result);
+    callback(null, result);
+  }).catch(err => {
+    console.log('mgrpwd', err);
+    callback(err, null);
+  });
+};
+
 // 携带银子操作,给虚拟道具(bag表)
 exports.sp_mgrbag = function (playerid, action, value, callback) {
   let gbk_playerid = iconv.encode(playerid, 'gbk').toString('latin1');

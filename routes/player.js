@@ -170,6 +170,33 @@ router.post('/mgrbox', function (req, res, next) {
   });
 });
 
+// 修改玩家登录密码
+router.post('/mgrpwd', function (req, res, next) {
+  console.log('request manage password...');
+  if (!req.body || (!req.body.playerid && !req.body.password)) {
+    return;
+  }
+  let playerid = req.body.playerid.trim();
+  if (req.body.playerid.length == 0) {
+    return;
+  }
+  if (req.body.password.length == 0) {
+    return;
+  }
+  db.sp_mgrpwd(playerid, req.body.password, function (err, result) {
+    if (err) {
+      console.error(err);
+    } else {
+      // vue-elementui-admin 约定非20000为错误
+      let respMsg = {
+        code: 20000,
+        message: 'ok'
+      };
+      res.json(respMsg);
+    }
+  });
+});
+
 // 玩家银子清零,给虚拟道具
 router.post('/mgrbag', function (req, res, next) {
   console.log('request manage bag...');
