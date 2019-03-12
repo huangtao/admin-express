@@ -85,7 +85,7 @@ router.post('/dopay', function (req, res, next) {
   let str = req.token_data.username + ':dopoay playerid=' + playerid;
   str += ',price=' + price + ',desc=' + req.body.desc;
   logger.info(str);
-  db.sp_dopay(playerid, price, function (err, result) {
+  db.sp_dopay(playerid, price, req.body.is_yz, function (err, result) {
     if (err) {
       console.error(err);
     } else {
@@ -101,7 +101,11 @@ router.post('/dopay', function (req, res, next) {
         data: data
       };
       if (dbret === 1) {
-        data.boxGold = result.output.bank;
+        if (req.body.is_yz) {
+          data.boxGold = result.output.bank;
+        } else {
+          data.diamond = result.output.bank;
+        }
       } else {
         respMsg.message = '操作失败!';
       }

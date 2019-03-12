@@ -62,15 +62,16 @@ exports.sp_getplayerinfo = function (playerid, callback) {
 };
 
 // 充值
-exports.sp_dopay = function (playerid, price, callback) {
+exports.sp_dopay = function (playerid, price, is_yz, callback) {
   let gbk_playerid = iconv.encode(playerid, 'gbk').toString('latin1');
   new sql.ConnectionPool(config).connect().then(pool => {
     return pool.request()
       .input('usetoid', sql.Char, gbk_playerid)
       .input('rmb', sql.Int, price)
+      .input('isyz', sql.Int, is_yz)
       .output('result', sql.Int, 0)
       .output('bank', sql.Int)
-      .execute('ld_mgr_uc');
+      .execute('cp_mgr_pay');
   }).then(result => {
     // console.dir(result);
     callback(null, result);
